@@ -55,131 +55,163 @@
 
     <!-- 主要內容區 -->
     <main class="main-layout">
-      <!-- 左側：日期與時間軸排程看板 -->
+      <!-- 左側：步驟 1、步驟 2、步驟 3 -->
       <section class="schedule-section">
-        <!-- 控制列 -->
-        <div class="control-bar">
-          <div class="date-selector-group">
-            <label for="bookingDate" class="control-label">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
-              預約日期
-            </label>
-            <div class="date-input-wrapper">
-              <input type="date" id="bookingDate" class="date-input">
-              <button id="todayBtn" class="btn btn-sm btn-outline">今天</button>
+        <!-- 步驟 1 (時長) 與 步驟 2 (日期) 控制列 -->
+        <div class="steps-top-bar">
+          <!-- 步驟 1：選擇服務時間長度 -->
+          <div class="step-card step-duration-card">
+            <div class="step-header-label">
+              <span class="step-num">1</span>
+              <span class="step-title">選擇服務時間長度</span>
+            </div>
+            <div class="duration-selector-group" id="durationOptions">
+              <button type="button" class="duration-btn active" data-duration="60">
+                <span class="duration-title">1 小時</span>
+                <span class="duration-sub">佔 2 個半小時</span>
+              </button>
+              <button type="button" class="duration-btn" data-duration="90">
+                <span class="duration-title">1.5 小時</span>
+                <span class="duration-sub">佔 3 個半小時</span>
+              </button>
+              <button type="button" class="duration-btn" data-duration="120">
+                <span class="duration-title">2 小時</span>
+                <span class="duration-sub">佔 4 個半小時</span>
+              </button>
             </div>
           </div>
 
-          <div class="status-legend">
-            <div class="legend-item">
-              <span class="legend-dot available"></span>
-              <span>可選起始點</span>
+          <!-- 步驟 2：選擇預約日期 -->
+          <div class="step-card step-date-card">
+            <div class="step-header-label">
+              <span class="step-num">2</span>
+              <span class="step-title">選擇預約日期</span>
             </div>
-            <div class="legend-item">
-              <span class="legend-dot selected"></span>
-              <span>本次選定時段</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-dot booked"></span>
-              <span>已被預約時段</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-dot conflict"></span>
-              <span>時長衝突</span>
+            <div class="date-selector-group">
+              <div class="date-input-wrapper">
+                <input type="date" id="bookingDate" class="date-input">
+                <button id="todayBtn" class="btn btn-sm btn-outline">今天</button>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- 概況看板 -->
-        <div class="overview-banner">
-          <div class="overview-info">
-            <span class="overview-date" id="displayDateLabel">2026年09月13日 星期日</span>
-            <div class="overview-badges">
-              <span class="badge" id="currentDurationBadge">當前選擇時長：1 小時（2個單元）</span>
-              <span class="badge booked-badge" id="bookedSlotsBadge">已佔用：0 / 26 單元</span>
+        <!-- 步驟 3：選擇服務時間看板 -->
+        <div class="step-3-container">
+          <!-- 控制列與圖例 -->
+          <div class="control-bar">
+            <div class="step-header-label">
+              <span class="step-num">3</span>
+              <span class="step-title">選擇服務時間（點選起始時段）</span>
+            </div>
+            <div class="status-legend">
+              <div class="legend-item">
+                <span class="legend-dot available"></span>
+                <span>可選起始點</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot selected"></span>
+                <span>選定時段</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot booked"></span>
+                <span>已被預約</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot conflict"></span>
+                <span>時長衝突</span>
+              </div>
             </div>
           </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" id="occupancyProgressBar" style="width: 0%;"></div>
-          </div>
-        </div>
 
-        <!-- 時段網格標題 -->
-        <div class="grid-header">
-          <h2>09:00 - 24:00 時間排程看板（每格 30 分鐘，連續無休）</h2>
-          <span class="hint-text" id="viewModeHintText">* 客戶模式：預約時段反灰鎖定，僅顯示電話後三碼以維護隱私</span>
-        </div>
-        
-        <!-- 時間區塊網格 -->
-        <div class="time-slots-grid" id="timeSlotsGrid">
-          <!-- 由 JS 渲染 -->
+          <!-- 概況看板 -->
+          <div class="overview-banner">
+            <div class="overview-info">
+              <span class="overview-date" id="displayDateLabel">2026年09月13日 星期日</span>
+              <div class="overview-badges">
+                <span class="badge" id="currentDurationBadge">當前選擇時長：1 小時（2個單元）</span>
+                <span class="badge booked-badge" id="bookedSlotsBadge">已佔用：0 / 30 單元</span>
+              </div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" id="occupancyProgressBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- 時段網格標題 -->
+          <div class="grid-header">
+            <h2>09:00 - 24:00 時間排程看板（每格 30 分鐘，連續無休）</h2>
+            <span class="hint-text" id="viewModeHintText">* 客戶模式：預約時段反灰鎖定，僅顯示電話後三碼以維護隱私</span>
+          </div>
+          
+          <!-- 時間區塊網格 -->
+          <div class="time-slots-grid" id="timeSlotsGrid">
+            <!-- 由 JS 渲染 -->
+          </div>
         </div>
       </section>
 
-      <!-- 右側：掛號登記與服務設定 -->
+      <!-- 右側：掛號登記與確認 (步驟 4 & 步驟 5) -->
       <aside class="booking-sidebar">
         <!-- 登記表單 -->
         <div class="sidebar-card form-card">
           <div class="card-header">
-            <h3>預約登記表單</h3>
-            <span class="step-tag" id="currentStepTag">設定服務時長</span>
+            <h3>預約登記資料</h3>
+            <span class="step-tag" id="currentStepTag">步驟 1~3: 選擇時段</span>
           </div>
 
           <form id="bookingForm" autocomplete="off">
-            <!-- 服務時長選擇 -->
-            <div class="form-group">
-              <label class="section-label">選擇服務時間長度 <span class="required">*</span></label>
-              <div class="duration-selector-group" id="durationOptions">
-                <button type="button" class="duration-btn active" data-duration="60">
-                  <span class="duration-title">1 小時</span>
-                  <span class="duration-sub">佔 2 個半小時</span>
-                </button>
-                <button type="button" class="duration-btn" data-duration="90">
-                  <span class="duration-title">1.5 小時</span>
-                  <span class="duration-sub">佔 3 個半小時</span>
-                </button>
-                <button type="button" class="duration-btn" data-duration="120">
-                  <span class="duration-title">2 小時</span>
-                  <span class="duration-sub">佔 4 個半小時</span>
-                </button>
+            <!-- 步驟 4：輸入姓名電話 -->
+            <div class="step-block">
+              <div class="step-header-label mb-2">
+                <span class="step-num">4</span>
+                <span class="step-title">輸入姓名與聯絡電話</span>
+              </div>
+
+              <!-- 姓名輸入 -->
+              <div class="form-group">
+                <label for="clientName">客戶姓名 <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <input type="text" id="clientName" placeholder="請輸入姓名（例如：林小姐）" required maxlength="20">
+                </div>
+                <small class="field-hint" id="nameHint">（客戶模式：看板公開資訊不顯示姓名，僅管理員可檢視）</small>
+              </div>
+
+              <!-- 手機號碼輸入 -->
+              <div class="form-group">
+                <label for="clientPhone">聯絡電話 / 手機 <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  <input type="tel" id="clientPhone" placeholder="例如：0912345678" required maxlength="15">
+                </div>
+                <small class="field-hint highlight" id="phoneHint">★ 看板僅顯示尾三碼；管理員模式可檢視完整電話</small>
               </div>
             </div>
 
-            <!-- 選取的時段預覽 -->
-            <div class="selected-slot-preview" id="slotPreviewBox">
-              <div class="preview-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <!-- 步驟 5：確認登記 -->
+            <div class="step-block mt-3">
+              <div class="step-header-label mb-2">
+                <span class="step-num">5</span>
+                <span class="step-title">最後確認並登記</span>
               </div>
-              <div class="preview-details">
-                <span class="preview-title">預約起訖時段</span>
-                <span class="preview-time" id="previewTimeText">尚未選取起始時間</span>
-                <span class="preview-duration" id="previewDurationText">時長：1 小時</span>
-              </div>
-            </div>
 
-            <!-- 姓名輸入 -->
-            <div class="form-group">
-              <label for="clientName">客戶姓名 <span class="required">*</span></label>
-              <div class="input-wrapper">
-                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <input type="text" id="clientName" placeholder="請輸入姓名（例如：林小姐）" required maxlength="20">
+              <!-- 選取的時段預覽 -->
+              <div class="selected-slot-preview" id="slotPreviewBox">
+                <div class="preview-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div class="preview-details">
+                  <span class="preview-title">預約起訖時段</span>
+                  <span class="preview-time" id="previewTimeText">尚未選取起始時間（請點選左側看板）</span>
+                  <span class="preview-duration" id="previewDurationText">時長：1 小時</span>
+                </div>
               </div>
-              <small class="field-hint" id="nameHint">（客戶模式：看板公開資訊不顯示姓名，僅管理員可檢視）</small>
-            </div>
 
-            <!-- 手機號碼輸入 -->
-            <div class="form-group">
-              <label for="clientPhone">聯絡電話 / 手機 <span class="required">*</span></label>
-              <div class="input-wrapper">
-                <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                <input type="tel" id="clientPhone" placeholder="例如：0912345678" required maxlength="15">
-              </div>
-              <small class="field-hint highlight" id="phoneHint">★ 客戶模式看板僅顯示尾三碼；管理員模式顯示完整電話</small>
+              <button type="submit" id="submitBookingBtn" class="btn btn-primary submit-btn" disabled>
+                確認登記預約
+              </button>
             </div>
-
-            <button type="submit" id="submitBookingBtn" class="btn btn-primary submit-btn" disabled>
-              確認登記預約
-            </button>
           </form>
         </div>
 

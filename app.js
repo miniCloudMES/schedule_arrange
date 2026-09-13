@@ -461,16 +461,14 @@ function updateSlotPreview() {
 
   slotPreviewBox.classList.add('active');
   previewTimeText.textContent = `${startSlot.startStr} - ${endSlot.endStr}`;
-  previewDurationText.textContent = `服務時長：${selectedDurationMins / 60} 小時（涵蓋 ${needed} 個時段）`;
-  currentStepTag.textContent = '步驟 2: 填寫資料';
+  previewDurationText.textContent = `服務時長：${selectedDurationMins / 60} 小時（日期：${currentDate}）`;
 }
 
 function resetSlotPreview() {
   selectedStartIndex = null;
   slotPreviewBox.classList.remove('active');
-  previewTimeText.textContent = '尚未選取起始時間';
+  previewTimeText.textContent = '尚未選取起始時間（請點選左側看板）';
   previewDurationText.textContent = `時長：${selectedDurationMins / 60} 小時`;
-  currentStepTag.textContent = '步驟 1: 選取時段';
   validateFormState();
 }
 
@@ -491,6 +489,17 @@ function validateFormState() {
 
   const canSubmit = selectedStartIndex !== null && name.length >= 1 && isValidPhone;
   submitBookingBtn.disabled = !canSubmit;
+
+  if (selectedStartIndex === null) {
+    currentStepTag.textContent = '步驟 1~3: 選擇時段';
+    currentStepTag.className = 'step-tag';
+  } else if (!name || !isValidPhone) {
+    currentStepTag.textContent = '步驟 4: 填寫資料';
+    currentStepTag.className = 'step-tag active';
+  } else {
+    currentStepTag.textContent = '步驟 5: 可確認登記';
+    currentStepTag.className = 'step-tag complete';
+  }
 }
 
 function validatePhoneNumber(phone) {
