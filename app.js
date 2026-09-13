@@ -3,7 +3,7 @@
  * - 支援身分切換：
  *   1. 客戶模式（預設）：預約時段反灰鎖定，不顯示姓名，僅公開電話末三碼。
  *   2. 管理員模式：登入後可完整查看客戶姓名、完整電話號碼、時段分配與預約管理。
- * - 預設管理員帳號：admin / 密碼：admin888
+ * - 請務必上線前修改預設密碼（建議以環境變數或後端驗證取代硬編碼）
  */
 
 const CONFIG = {
@@ -13,7 +13,7 @@ const CONFIG = {
   STORAGE_KEY: 'service_schedule_reservations_v3',
   ADMIN_AUTH_KEY: 'service_schedule_admin_auth',
   DEFAULT_ADMIN_USER: 'admin',
-  DEFAULT_ADMIN_PASS: 'admin888'
+  DEFAULT_ADMIN_PASS: 'admin888'  // 上線前務必更改
 };
 
 // 系統狀態
@@ -60,8 +60,6 @@ const sidebarBookedBadge = document.getElementById('sidebarBookedBadge');
 const quickSampleBtn = document.getElementById('quickSampleBtn');
 const clearAllBtn = document.getElementById('clearAllBtn');
 const toastNotification = document.getElementById('toastNotification');
-
-// ======================= 初始化 =======================
 function init() {
   bookingDateInput.value = currentDate;
   bookingDateInput.min = currentDate;
@@ -87,10 +85,6 @@ function init() {
   bookingForm.addEventListener('submit', handleFormSubmit);
   clientNameInput.addEventListener('input', validateFormState);
   clientPhoneInput.addEventListener('input', validateFormState);
-
-  // 範例資料與清空
-  quickSampleBtn.addEventListener('click', loadSampleData);
-  clearAllBtn.addEventListener('click', handleClearAll);
 
   // 管理員登入 Modal 控制
   adminLoginBtn.addEventListener('click', openAdminModal);
@@ -137,7 +131,7 @@ function handleAdminLogin(e) {
     renderAll();
     showToast('🎉 管理員登入成功！已解除隱私保護，現可查看全名與完整電話。', 'success');
   } else {
-    showToast('帳號或密碼錯誤！（預設 admin / admin888）', 'error');
+    showToast('帳號或密碼錯誤！', 'error');
   }
 }
 
