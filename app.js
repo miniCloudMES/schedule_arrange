@@ -32,6 +32,7 @@ const bookedSlotsBadge = document.getElementById('bookedSlotsBadge');
 const occupancyProgressBar = document.getElementById('occupancyProgressBar');
 const timeSlotsGrid = document.getElementById('timeSlotsGrid');
 const roleIndicatorBadge = document.getElementById('roleIndicatorBadge');
+const dbStatusBadge = document.getElementById('dbStatusBadge');
 const viewModeHintText = document.getElementById('viewModeHintText');
 
 // 管理員控制元素
@@ -102,6 +103,8 @@ function init() {
   adminLogoutBtn.addEventListener('click', handleAdminLogout);
 
   updateRoleUI();
+  updateDbBadge(typeof isFirebaseConnected !== 'undefined' && isFirebaseConnected);
+  subscribeToDate(currentDate);
   renderAll();
 }
 
@@ -476,6 +479,7 @@ function handleDateChange() {
   if (!newDate) return;
   currentDate = newDate;
   resetSlotPreview();
+  subscribeToDate(currentDate);
   renderAll();
   showToast(`已切換預約日期至：${currentDate}`, 'info');
 }
@@ -590,12 +594,15 @@ function cancelReservation(recordId) {
 }
 
 function handleClearAll() {
-  if (confirm('警告：確定要清空所有預約登記嗎？此動作無法復原。')) {
-    reservations = {};
+  if (confirm('警告：確定要清空本日所有預約登記嗎？此動作無法復原。')) {
+    reservations[currentDate] = [];
     saveReservations();
+    if (typeof isFirebaseConnected !== 'undefined' && isFirebaseConnected && db) {
+      db.collection('reservations').doc(currentDate).delete().catch(e => console.error(e));
+    }
     resetSlotPreview();
     renderAll();
-    showToast('已清空所有預約記錄！', 'info');
+    showToast(`已清空 ${currentDate} 的所有預約記錄！`, 'info');
   }
 }
 
@@ -639,7 +646,53 @@ function loadSampleData() {
   showToast('已載入示範預約！點擊右上角「管理員登入」即可切換查閱人名與電話。', 'success');
 }
 
-// ======================= LocalStorage =======================
+// ======================= Firebase 與 LocalStorage 同步 =======================
+let unsubscribeDateListener = null;
+
+function updateDbBadge(connected) {
+  if (!dbStatusBadge) return;
+  if (connected) {
+    dbStatusBadge.className = 'db-badge cloud';
+    dbStatusBadge.textContent = '☁️ Firebase 已連線';
+    dbStatusBadge.title = '即時雲端同步中';
+  } else {
+    dbStatusBadge.className = 'db-badge local';
+    dbStatusBadge.textContent = '💾 本地模式';
+    dbStatusBadge.title = '離線或尚未填入 Firebase API Key';
+  }
+}
+
+function subscribeToDate(dateStr) {
+  if (unsubscribeDateListener) {
+    unsubscribeDateListener();
+    unsubscribeDateListener = null;
+  }
+
+  if (typeof isFirebaseConnected !== 'undefined' && isFirebaseConnected && db) {
+    updateDbBadge(true);
+    try {
+      unsubscribeDateListener = db.collection('reservations').doc(dateStr).onSnapshot((docSnapshot) => {
+        if (docSnapshot.exists) {
+          const data = docSnapshot.data();
+          reservations[dateStr] = Array.isArray(data.items) ? data.items : [];
+        } else {
+          reservations[dateStr] = [];
+        }
+        saveToLocalStorageOnly();
+        renderAll();
+      }, (err) => {
+        console.error("Firestore onSnapshot 監聽錯誤:", err);
+        updateDbBadge(false);
+      });
+    } catch (e) {
+      console.error("Firestore 訂閱失敗:", e);
+      updateDbBadge(false);
+    }
+  } else {
+    updateDbBadge(false);
+  }
+}
+
 function loadReservations() {
   try {
     const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
@@ -650,11 +703,27 @@ function loadReservations() {
   }
 }
 
-function saveReservations() {
+function saveToLocalStorageOnly() {
   try {
     localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(reservations));
   } catch (e) {
     console.error('Failed to save to localStorage', e);
+  }
+}
+
+function saveReservations() {
+  saveToLocalStorageOnly();
+
+  // 若 Firebase 已連線，同步儲存至 Cloud Firestore
+  if (typeof isFirebaseConnected !== 'undefined' && isFirebaseConnected && db) {
+    const items = reservations[currentDate] || [];
+    db.collection('reservations').doc(currentDate).set({
+      items: items,
+      updatedAt: new Date().toISOString()
+    }).catch(err => {
+      console.error("Firestore 寫入失敗:", err);
+      showToast('雲端同步失敗，已暫存至本地', 'error');
+    });
   }
 }
 

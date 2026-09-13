@@ -146,6 +146,28 @@ body {
   box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.15);
 }
 
+.db-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.db-badge.cloud {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.db-badge.local {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
 .brand-subtitle {
   font-size: 0.85rem;
   color: var(--text-muted);
