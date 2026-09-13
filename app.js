@@ -593,11 +593,17 @@ function handleFormSubmit(e) {
 }
 
 function cancelReservation(recordId) {
+  // 只有管理員可以取消預約
+  if (!isAdminLoggedIn) {
+    showToast('僅管理員可取消預約，請先登入管理員帳號', 'error');
+    return;
+  }
+
   const dayRecords = reservations[currentDate] || [];
   const target = dayRecords.find(r => r.id === recordId);
   if (!target) return;
 
-  const displayName = isAdminLoggedIn ? `${target.name} (${target.phone})` : `尾號 ${extractLastThreeDigits(target.phone)}`;
+  const displayName = `${target.name} (${target.phone})`;
   if (confirm(`確定要取消 ${currentDate} 時段 ${target.timeRange}（${displayName}）的預約登記嗎？`)) {
     reservations[currentDate] = dayRecords.filter(r => r.id !== recordId);
     if (reservations[currentDate].length === 0) {
