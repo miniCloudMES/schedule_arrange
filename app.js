@@ -394,25 +394,32 @@ function renderBookedSidebarList() {
     const row = document.createElement('div');
     row.className = 'booked-item-row';
 
-    // 根據管理員登入切換顯示內容
+    // 根據管理員登入切換顯示內容與取消按鈕
     const phoneDisplay = isAdminLoggedIn
       ? `<span class="admin-tag">全名電話</span><strong>${record.name}</strong> (${record.phone})`
       : `客戶電話後三碼：***-***-${lastThree}`;
+
+    // 取消按鈕僅管理員可見
+    const cancelBtn = isAdminLoggedIn
+      ? `<button class="btn-cancel-slot" title="取消此筆預約" data-id="${record.id}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>`
+      : '';
 
     row.innerHTML = `
       <div class="booked-row-left">
         <span class="booked-item-time">${record.timeRange} (${record.durationHours}小時)</span>
         <span class="booked-item-phone">${phoneDisplay}</span>
       </div>
-      <button class="btn-cancel-slot" title="取消此筆預約" data-id="${record.id}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
+      ${cancelBtn}
     `;
 
-    row.querySelector('.btn-cancel-slot').addEventListener('click', (e) => {
-      e.stopPropagation();
-      cancelReservation(record.id);
-    });
+    if (isAdminLoggedIn) {
+      row.querySelector('.btn-cancel-slot').addEventListener('click', (e) => {
+        e.stopPropagation();
+        cancelReservation(record.id);
+      });
+    }
 
     bookedListContainer.appendChild(row);
   });
