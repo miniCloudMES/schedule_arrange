@@ -57,8 +57,6 @@ const clientPhoneInput = document.getElementById('clientPhone');
 const submitBookingBtn = document.getElementById('submitBookingBtn');
 const bookedListContainer = document.getElementById('bookedListContainer');
 const sidebarBookedBadge = document.getElementById('sidebarBookedBadge');
-const quickSampleBtn = document.getElementById('quickSampleBtn');
-const clearAllBtn = document.getElementById('clearAllBtn');
 const toastNotification = document.getElementById('toastNotification');
 function init() {
   bookingDateInput.value = currentDate;
