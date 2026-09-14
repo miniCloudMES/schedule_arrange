@@ -328,9 +328,6 @@ function renderTimeSlots() {
 
       // 判斷是否管理員展示姓名與電話
       if (isAdminLoggedIn) {
-        const noteDisplay = record.note
-          ? `<div class="admin-client-note"><span>📝 備註：</span>${record.note}</div>`
-          : '';
         card.innerHTML = `
           <div class="slot-time">${slot.label}</div>
           <div class="slot-status-pill">
@@ -343,14 +340,11 @@ function renderTimeSlots() {
                 ${record.name}
               </span>
               <span class="admin-client-phone">${record.phone}</span>
-              ${noteDisplay}
             </div>
           </div>
         `;
         card.addEventListener('click', () => {
-          let msg = `【管理員查閱】客戶：${record.name}｜電話：${record.phone}｜時段：${record.timeRange}`;
-          if (record.note) msg += `｜備註：${record.note}`;
-          showToast(msg, 'info');
+          showToast(`【管理員查閱】客戶：${record.name}｜電話：${record.phone}｜時段：${record.timeRange}`, 'info');
         });
       } else {
         // 客戶模式：不顯示姓名，僅顯示電話末三碼
