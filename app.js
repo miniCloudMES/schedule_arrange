@@ -228,11 +228,14 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
 
 // ======================= 判斷過去時間 =======================
 function isPastSlot(slotIndex) {
+  // 只有「今天」的時段才需要比對現在時間
+  const today = getTodayDateString();
+  if (currentDate !== today) return false;
+
   const now = new Date();
+  const currentMin = now.getHours() * 60 + now.getMinutes();
   const slotStartMin = slotIndex * CONFIG.INTERVAL_MINS;
-  const todayStartMin = now.getHours() * 60 + now.getMinutes();
-  const slotStartMinRounded = Math.floor(todayStartMin / CONFIG.INTERVAL_MINS) * CONFIG.INTERVAL_MINS;
-  return slotStartMin < slotStartMinRounded;
+  return slotStartMin <= currentMin;
 }
 
 // ======================= 渲染畫面 =======================
