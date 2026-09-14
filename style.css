@@ -751,7 +751,15 @@ body {
 .booking-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
+}
+
+/* 備註文字區 */
+.booking-note {
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 0.25rem;
 }
 
 .sidebar-card {

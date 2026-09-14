@@ -54,6 +54,7 @@ const previewDurationText = document.getElementById('previewDurationText');
 const currentStepTag = document.getElementById('currentStepTag');
 const clientNameInput = document.getElementById('clientName');
 const clientPhoneInput = document.getElementById('clientPhone');
+const clientNoteInput = document.getElementById('clientNote');
 const submitBookingBtn = document.getElementById('submitBookingBtn');
 const bookedListContainer = document.getElementById('bookedListContainer');
 const sidebarBookedBadge = document.getElementById('sidebarBookedBadge');
@@ -461,6 +462,7 @@ function updateSlotPreview() {
   slotPreviewBox.classList.add('active');
   previewTimeText.textContent = `${startSlot.startStr} - ${endSlot.endStr}`;
   previewDurationText.textContent = `服務時長：${selectedDurationMins / 60} 小時（日期：${currentDate}）`;
+  currentStepTag.textContent = '步驟 4: 填寫資料';
 }
 
 function resetSlotPreview() {
@@ -578,6 +580,7 @@ function handleFormSubmit(e) {
 
   clientNameInput.value = '';
   clientPhoneInput.value = '';
+  clientNoteInput.value = '';
   resetSlotPreview();
   renderAll();
 
