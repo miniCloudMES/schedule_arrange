@@ -227,22 +227,25 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
 }
 
 // ======================= 時區設定 =======================
-const TIMEZONE = 'Asia/Taipei'; // UTC+8
+const TIMEZONE = 'Asia/Taipei';
+const TZ_OFFSET_MIN = 8 * 60; // UTC+8
 
 function getLocalDateString() {
   const now = new Date();
-  // 轉換為台北時間：UTC時間 + 8小時
-  const taipeiTime = new Date(now.getTime() + 8 * 3600000);
-  const year = taipeiTime.getUTCFullYear();
-  const month = String(taipeiTime.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(taipeiTime.getUTCDate()).padStart(2, '0');
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  const localDate = new Date(localMin);
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 function getLocalNow() {
   const now = new Date();
-  // 轉換為台北時間：UTC時間 + 8小時
-  return new Date(now.getTime() + 8 * 3600000);
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  return new Date(localMin);
 }
 
 // ======================= 判斷過去時間 =======================
@@ -252,7 +255,7 @@ function isPastSlot(slotIndex) {
   if (currentDate !== today) return false;
 
   const now = getLocalNow();
-  const currentMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const currentMin = now.getHours() * 60 + now.getMinutes();
   // 從 09:00 開始計算每格的絕對時間（分鐘）
   const slotStartMin = CONFIG.START_HOUR * 60 + slotIndex * CONFIG.INTERVAL_MINS;
   return slotStartMin <= currentMin;
@@ -325,9 +328,6 @@ function renderTimeSlots() {
 
       // 判斷是否管理員展示姓名與電話
       if (isAdminLoggedIn) {
-        const noteDisplay = record.note
-          ? `<div class="admin-client-note"><span>📝 備註：</span>${record.note}</div>`
-          : '';
         card.innerHTML = `
           <div class="slot-time">${slot.label}</div>
           <div class="slot-status-pill">
@@ -340,14 +340,11 @@ function renderTimeSlots() {
                 ${record.name}
               </span>
               <span class="admin-client-phone">${record.phone}</span>
-              ${noteDisplay}
             </div>
           </div>
         `;
         card.addEventListener('click', () => {
-          let msg = `【管理員查閱】客戶：${record.name}｜電話：${record.phone}｜時段：${record.timeRange}`;
-          if (record.note) msg += `｜備註：${record.note}`;
-          showToast(msg, 'info');
+          showToast(`【管理員查閱】客戶：${record.name}｜電話：${record.phone}｜時段：${record.timeRange}`, 'info');
         });
       } else {
         // 客戶模式：不顯示姓名，僅顯示電話末三碼
@@ -454,7 +451,6 @@ function renderBookedSidebarList() {
       <div class="booked-row-left">
         <span class="booked-item-time">${record.timeRange} (${record.durationHours}小時)</span>
         <span class="booked-item-phone">${phoneDisplay}</span>
-        ${isAdminLoggedIn && record.note ? `<div class="admin-client-note"><span>📝 備註：</span>${record.note}</div>` : ''}
       </div>
       ${cancelBtn}
     `;
@@ -616,7 +612,6 @@ function handleFormSubmit(e) {
     id: 'res_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
     name: name,
     phone: phone,
-    note: clientNoteInput.value.trim(),
     durationMins: selectedDurationMins,
     durationHours: selectedDurationMins / 60,
     startIndex: selectedStartIndex,
@@ -624,8 +619,6 @@ function handleFormSubmit(e) {
     timeRange: timeRange,
     createdAt: new Date().toISOString()
   };
-  // DEBUG: 檢查 note 是否被寫入
-  console.log('Saving reservation record:', newRecord);
 
   if (!reservations[currentDate]) {
     reservations[currentDate] = [];
@@ -800,11 +793,7 @@ function saveReservations() {
 }
 
 function getTodayDateString() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getLocalDateString();
 }
 
 let toastTimer = null;
