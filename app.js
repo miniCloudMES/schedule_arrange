@@ -226,13 +226,35 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
   return { canBook: true };
 }
 
+// ======================= 時區設定 =======================
+const TIMEZONE = 'Asia/Taipei';
+const TZ_OFFSET_MIN = 8 * 60; // UTC+8
+
+function getLocalDateString() {
+  const now = new Date();
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  const localDate = new Date(localMin);
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getLocalNow() {
+  const now = new Date();
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  return new Date(localMin);
+}
+
 // ======================= 判斷過去時間 =======================
 function isPastSlot(slotIndex) {
   // 只有「今天」的時段才需要比對現在時間
-  const today = getTodayDateString();
+  const today = getLocalDateString();
   if (currentDate !== today) return false;
 
-  const now = new Date();
+  const now = getLocalNow();
   const currentMin = now.getHours() * 60 + now.getMinutes();
   // 從 09:00 開始計算每格的絕對時間（分鐘）
   const slotStartMin = CONFIG.START_HOUR * 60 + slotIndex * CONFIG.INTERVAL_MINS;
@@ -771,11 +793,7 @@ function saveReservations() {
 }
 
 function getTodayDateString() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getLocalDateString();
 }
 
 let toastTimer = null;
