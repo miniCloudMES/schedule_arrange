@@ -218,12 +218,21 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
         : `尾號：${extractLastThreeDigits(bookedRecord.phone)}`;
       return {
         canBook: false,
-        reason: `延伸範圍內之 ${allSlots[slotIdx].label} 已被預約（${identifier}），時段衝突！`
+        reason: `延伸範圍內之 ${allSlots[slotIdx].label} 已預約（${identifier}），時段衝突！`
       };
     }
   }
 
   return { canBook: true };
+}
+
+// ======================= 判斷過去時間 =======================
+function isPastSlot(slotIndex) {
+  const now = new Date();
+  const slotStartMin = slotIndex * CONFIG.INTERVAL_MINS;
+  const todayStartMin = now.getHours() * 60 + now.getMinutes();
+  const slotStartMinRounded = Math.floor(todayStartMin / CONFIG.INTERVAL_MINS) * CONFIG.INTERVAL_MINS;
+  return slotStartMin < slotStartMinRounded;
 }
 
 // ======================= 渲染畫面 =======================
@@ -264,6 +273,7 @@ function renderTimeSlots() {
     const isBooked = !!dayOccupiedMap[slot.index];
     const isSelected = selectedIndices.has(slot.index);
     const isStart = selectedStartIndex === slot.index;
+    const isPast = isPastSlot(slot.index);
 
     const availCheck = !isBooked ? checkSlotAvailability(slot.index, allSlots, dayOccupiedMap) : null;
     const isConflictStart = !isBooked && !availCheck.canBook;
@@ -271,7 +281,19 @@ function renderTimeSlots() {
     const card = document.createElement('div');
     card.dataset.index = slot.index;
 
-    if (isBooked) {
+    if (isPast && !isBooked && !isSelected) {
+      // 狀態0：已過去的時段（灰色不可點選）
+      card.className = 'slot-card is-past';
+      card.innerHTML = `
+        <div class="slot-time">${slot.label}</div>
+        <div class="slot-status-pill">
+          <span>已過去</span>
+        </div>
+        <div class="slot-booked-info" style="border:none; color: #94a3b8;">
+          <span>不可選取</span>
+        </div>
+      `;
+    } else if (isBooked) {
       // 狀態1：已預約
       const record = dayOccupiedMap[slot.index];
       const lastThreeDigits = extractLastThreeDigits(record.phone);

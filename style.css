@@ -674,7 +674,23 @@ body {
 }
 
 /* 時長延伸衝突 */
-.slot-card.is-conflict {
+.slot-card.is-past {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.slot-card.is-past .slot-time {
+  color: #94a3b8;
+}
+
+.slot-card.is-past .slot-status-pill {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+}
   background-color: var(--status-conflict-bg);
   border-color: var(--status-conflict-border);
   cursor: not-allowed;
