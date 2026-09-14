@@ -454,6 +454,7 @@ function renderBookedSidebarList() {
       <div class="booked-row-left">
         <span class="booked-item-time">${record.timeRange} (${record.durationHours}小時)</span>
         <span class="booked-item-phone">${phoneDisplay}</span>
+        ${isAdminLoggedIn && record.note ? `<div class="admin-client-note"><span>📝 備註：</span>${record.note}</div>` : ''}
       </div>
       ${cancelBtn}
     `;
@@ -615,6 +616,7 @@ function handleFormSubmit(e) {
     id: 'res_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
     name: name,
     phone: phone,
+    note: clientNoteInput.value.trim(),
     durationMins: selectedDurationMins,
     durationHours: selectedDurationMins / 60,
     startIndex: selectedStartIndex,
@@ -622,6 +624,8 @@ function handleFormSubmit(e) {
     timeRange: timeRange,
     createdAt: new Date().toISOString()
   };
+  // DEBUG: 檢查 note 是否被寫入
+  console.log('Saving reservation record:', newRecord);
 
   if (!reservations[currentDate]) {
     reservations[currentDate] = [];
