@@ -227,25 +227,22 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
 }
 
 // ======================= 時區設定 =======================
-const TIMEZONE = 'Asia/Taipei';
-const TZ_OFFSET_MIN = 8 * 60; // UTC+8
+const TIMEZONE = 'Asia/Taipei'; // UTC+8
 
 function getLocalDateString() {
   const now = new Date();
-  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
-  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
-  const localDate = new Date(localMin);
-  const year = localDate.getFullYear();
-  const month = String(localDate.getMonth() + 1).padStart(2, '0');
-  const day = String(localDate.getDate()).padStart(2, '0');
+  // 轉換為台北時間：UTC時間 + 8小時
+  const taipeiTime = new Date(now.getTime() + 8 * 3600000);
+  const year = taipeiTime.getUTCFullYear();
+  const month = String(taipeiTime.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(taipeiTime.getUTCDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 function getLocalNow() {
   const now = new Date();
-  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
-  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
-  return new Date(localMin);
+  // 轉換為台北時間：UTC時間 + 8小時
+  return new Date(now.getTime() + 8 * 3600000);
 }
 
 // ======================= 判斷過去時間 =======================
@@ -255,7 +252,7 @@ function isPastSlot(slotIndex) {
   if (currentDate !== today) return false;
 
   const now = getLocalNow();
-  const currentMin = now.getHours() * 60 + now.getMinutes();
+  const currentMin = now.getUTCHours() * 60 + now.getUTCMinutes();
   // 從 09:00 開始計算每格的絕對時間（分鐘）
   const slotStartMin = CONFIG.START_HOUR * 60 + slotIndex * CONFIG.INTERVAL_MINS;
   return slotStartMin <= currentMin;
