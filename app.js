@@ -234,7 +234,8 @@ function isPastSlot(slotIndex) {
 
   const now = new Date();
   const currentMin = now.getHours() * 60 + now.getMinutes();
-  const slotStartMin = slotIndex * CONFIG.INTERVAL_MINS;
+  // 從 09:00 開始計算每格的絕對時間（分鐘）
+  const slotStartMin = CONFIG.START_HOUR * 60 + slotIndex * CONFIG.INTERVAL_MINS;
   return slotStartMin <= currentMin;
 }
 
