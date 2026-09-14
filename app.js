@@ -228,11 +228,13 @@ function checkSlotAvailability(startIndex, allSlots, dayOccupiedMap) {
 
 // ======================= 時區設定 =======================
 const TIMEZONE = 'Asia/Taipei';
-const TZ_OFFSET_HOURS = 8; // UTC+8
+const TZ_OFFSET_MIN = 8 * 60; // UTC+8
 
 function getLocalDateString() {
   const now = new Date();
-  const localDate = new Date(now.getTime() + TZ_OFFSET_HOURS * 3600000 - now.getTimezoneOffset() * 60000);
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  const localDate = new Date(localMin);
   const year = localDate.getFullYear();
   const month = String(localDate.getMonth() + 1).padStart(2, '0');
   const day = String(localDate.getDate()).padStart(2, '0');
@@ -241,7 +243,9 @@ function getLocalDateString() {
 
 function getLocalNow() {
   const now = new Date();
-  return new Date(now.getTime() + TZ_OFFSET_HOURS * 3600000 - now.getTimezoneOffset() * 60000);
+  const utcMin = now.getTime() + now.getTimezoneOffset() * 60000;
+  const localMin = utcMin + TZ_OFFSET_MIN * 60000;
+  return new Date(localMin);
 }
 
 // ======================= 判斷過去時間 =======================
